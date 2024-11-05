@@ -2,15 +2,11 @@ import numpy as np
 from shapely import affinity
 from shapely.geometry import Point
 import solution
-# resolution of the polygon approximating a circle then scaled to approximate the ellipsis; according to Shapely documentation, a resolution of 16 allows to cover 99.8% of the circle's area (https://shapely.readthedocs.io/en/stable/manual.html#object.buffer)
+
 RESOLUTION = 16
 
-
 class Ellipse:
-
     def __init__(self, center, half_width, half_height, polygon=None):
-        """Constructor"""
-
         if type(center) != Point:
             center = Point(center[0], center[1])
 
@@ -18,7 +14,7 @@ class Ellipse:
         self.half_width = half_width
         self.half_height = half_height
 
-        # approximate the ellipse as a polygon to avoid having to define checks (intersection, is-within) with all other shapes
+        # Approximate ellipse as polygon
         circle_approximation = center.buffer(1, resolution=RESOLUTION)
         if not polygon:
             polygon = affinity.scale(circle_approximation, self.half_width, self.half_height)
@@ -27,26 +23,26 @@ class Ellipse:
     def __reduce__(self):
         return Ellipse, (self.center, self.half_width, self.half_height, self.polygon)
 
-    def intersects(self, other):
-        """Returns True if geometries intersect, else False"""
+    @property
+    def bounds(self):
+        """Return the bounding box (min_x, min_y, max_x, max_y)"""
+        x, y = self.center.x, self.center.y
+        return (
+            x - self.half_width,  # min_x
+            y - self.half_height, # min_y 
+            x + self.half_width,  # max_x
+            y + self.half_height  # max_y
+        )
 
-        # use the approximate polygon for the check
+    def intersects(self, other):
         return solution.do_shapes_intersect(self.polygon, other)
 
     def within(self, other):
-        """Returns True if geometry is within the other, else False"""
-
-        # use the approximate polygon for the check
         return solution.does_shape_contain_other(other, self.polygon)
 
     def contains(self, other):
-        """Returns True if the geometry contains the other, else False"""
-
-        # use the approximate polygon for the check
         return solution.does_shape_contain_other(self.polygon, other)
 
-    @property
+    @property 
     def area(self):
-        """Unitless area of the geometry (float)"""
-
         return np.pi * self.half_width * self.half_height

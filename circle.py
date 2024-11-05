@@ -24,6 +24,16 @@ class Circle:
 
     def __reduce__(self):
         return Circle, (self.center, self.radius)
+    
+    @property
+    def bounds(self):
+        """Returns the bounding box of the circle as (minx, miny, maxx, maxy)"""
+        return (
+            self.center.x - self.radius,  # minx
+            self.center.y - self.radius,  # miny 
+            self.center.x + self.radius,  # maxx
+            self.center.y + self.radius   # maxy
+        )
 
     def intersects(self, other):
         """Returns True if geometries intersect, else False"""
@@ -86,20 +96,23 @@ class Circle:
     def contains(self, other):
         """Returns True if the geometry contains the other, else False"""
 
-        # for the circle-in-circle case, use the within implementation, in opposite order
-        if type(other) == Circle:
+        # For Point objects, check if distance to center is less than radius
+        if isinstance(other, Point):
+            return self.center.distance(other) <= self.radius
 
+        # for the circle-in-circle case, use the within implementation, in opposite order
+        if isinstance(other, Circle):
             return other.within(self)
 
         # for multi-polygons, just it is just needed to check if the circle contains the boundary polygon
-        elif type(other) == MultiPolygon:
+        elif isinstance(other, MultiPolygon):
             other = other.geoms[0]
 
         # for ellipses, consider their polygon approximation
-        if type(other) == Ellipse:
+        if isinstance(other, Ellipse):
             other = other.polygon
 
-        # a circle contains another shape (e.g. polygon) if all the points of the shape are inside the circle, i.e. at a distance less than the radius
+        # a circle contains another shape (e.g. polygon) if all the points of the shape are inside the circle
         for coord in other.exterior.coords:
             if self.center.distance(Point(coord)) >= self.radius:
                 return False

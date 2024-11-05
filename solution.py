@@ -701,10 +701,10 @@ class Solution:
         if show_item_value_and_weight and font:
             centroid = get_centroid(shape)
             value = self.problem.items[item_index].value
-            if value / int(value) == 1:
+            if value != 0 and value == int(value):
                 value = int(value)
             weight = self.problem.items[item_index].weight
-            if weight / int(weight) == 1:
+            if weight != 0 and weight == int(weight):
                 weight = int(weight)
             value_weight_string = "v={}\nw={}".format(value, weight)
             item_font = dict(font)
