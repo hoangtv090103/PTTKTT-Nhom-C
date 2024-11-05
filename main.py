@@ -28,158 +28,310 @@ logger = logging.getLogger(__name__)
 def create_knapsack_packing_problems_with_manual_solutions(can_print=False):
     logger.info("Creating knapsack packing problems with manual solutions")
     problems, solutions = [], []
+    
+    start_time = time.time()
 
-    # Vấn đề 1: Hình tròn chứa các hình vuông, tròn và ellipse
-    logger.info("Creating problem 1: Circle containing squares, circles and ellipses")
+    # Problem 1: Circle containing squares and circles
+    logger.info("Creating problem 1: Circle containing squares and circles")
     container = Container(120, Circle((3.3, 3.3), radius=3.3))
     items = [
         Item(Polygon([(0, 0), (0, 4.5), (4.5, 4.5), (4.5, 0)]), 40., 50.),
-        Item(Circle((0, 0), 0.45), 20, 5),
-        Item(Ellipse((0, 0), 0.45, 0.3), 20, 10),
-        Item(Circle((0, 0), 0.45), 20, 15),
-        Item(Ellipse((0, 0), 0.3, 0.45), 20, 20)
+        Item(Circle((0, 0), 0.45), 20., 5.),
+        Item(Circle((0, 0), 0.45), 20., 10.),
+        Item(Circle((0, 0), 0.45), 20., 15.),
+        Item(Circle((0, 0), 0.45), 20., 20.)
     ]
     problem = Problem(container, items)
     solution = Solution(problem)
     problems.append(problem)
     solutions.append(solution)
-    positions_angles = [(0, (3.3, 3.3), 0.), (1, (3.3, 6.05), 0.), (2, (3.3, 0.55), 45.), 
-                       (3, (6.05, 3.3), 0.), (4, (0.55, 3.3), 90.)]
+    
+    positions_angles = [
+        (0, (3.3, 3.3), 0.),
+        (1, (3.3, 6.05), 0.),
+        (2, (3.3, 0.55), 0.),
+        (3, (6.05, 3.3), 0.),
+        (4, (0.55, 3.3), 0.)
+    ]
     for item, pos, angle in positions_angles:
         print_if_allowed(solution.add_item(item, pos, angle), can_print)
 
-    # Vấn đề 2: Đa giác chứa các ellipse đồng tâm
-    logger.info("Creating problem 2: Polygon containing concentric ellipses") 
-    container = Container(100., Point(5, 5).buffer(5, 4))
-    items = [Item(Ellipse((5, 5), i, i-0.2), 10, 25-i*5) for i in range(1, 6)]
+    # Problem 2: Polygon with concentric shapes
+    logger.info("Creating problem 2: Polygon with concentric shapes")
+    container = Container(100, Point(5, 5).buffer(5, 4))
+    items = [
+        Item(MultiPolygon([(Point(5, 5).buffer(4.7, 4).exterior.coords,
+                           [tuple(Point(5, 5).buffer(4, 4).exterior.coords)])]), 10., 25.),
+        Item(MultiPolygon([(Point(5, 5).buffer(3.7, 4).exterior.coords,
+                           [tuple(Point(5, 5).buffer(3, 4).exterior.coords)])]), 10., 15.),
+        Item(MultiPolygon([(Point(5, 5).buffer(2.7, 4).exterior.coords,
+                           [tuple(Point(5, 5).buffer(2, 4).exterior.coords)])]), 10., 20.),
+        Item(MultiPolygon([(Point(5, 5).buffer(1.7, 4).exterior.coords,
+                           [tuple(Point(5, 5).buffer(1, 4).exterior.coords)])]), 20., 20.),
+        Item(Circle((0., 0.), 0.7), 20., 10.)
+    ]
     problem = Problem(container, items)
     solution = Solution(problem)
     problems.append(problem)
     solutions.append(solution)
+    
     for i in range(5):
-        print_if_allowed(solution.add_item(i, (5, 5), 0.), can_print)
+        print_if_allowed(solution.add_item(i, (5., 5.), 0.), can_print)
 
-    # Vấn đề 3: Hình chữ nhật chứa các ellipse khác kích thước
-    logger.info("Creating problem 3: Rectangle containing different sized ellipses")
-    container = Container(150, Polygon([(0,0), (10,0), (10,8), (0,8)]))
-    items = [Item(Ellipse((0,0), 1+0.3*i, 0.8+0.2*i), 15+i*5, 20+i*10) for i in range(5)]
-    problem = Problem(container, items)
-    solution = Solution(problem)
-    problems.append(problem)
-    solutions.append(solution)
-    positions = [(2,4), (4,4), (6,4), (8,4), (8,6)]
-    angles = [0, 45, 90, 135, 180]
-    for i, (pos, angle) in enumerate(zip(positions, angles)):
-        print_if_allowed(solution.add_item(i, pos, angle), can_print)
-
-    # Vấn đề 4: Hình ellipse lớn chứa các hình tròn nhỏ
-    logger.info("Creating problem 4: Large ellipse containing small circles")
-    container = Container(200, Ellipse((5,5), 6, 4))
-    items = [Item(Circle((0,0), 1), 30, 40) for _ in range(5)]
-    problem = Problem(container, items)
-    solution = Solution(problem)
-    problems.append(problem)
-    solutions.append(solution)
-    positions = [(3,5), (5,3), (7,5), (5,7), (5,5)]
-    for i, pos in enumerate(positions):
-        print_if_allowed(solution.add_item(i, pos, 0), can_print)
-
-    # Vấn đề 5: Hình vuông chứa hỗn hợp ellipse và hình vuông
-    logger.info("Creating problem 5: Square containing mix of ellipses and squares")
-    container = Container(180, Polygon([(0,0), (8,0), (8,8), (0,8)]))
+    # Problem 3: Rectangle with triangles and ellipses
+    logger.info("Creating problem 3: Rectangle with triangles and ellipses")
+    container = Container(32, Polygon([(0, 0), (0, 10), (10, 10), (10, 0)]))
     items = [
-        Item(Ellipse((0,0), 1, 0.5), 25, 35),
-        Item(Polygon([(0,0), (2,0), (2,2), (0,2)]), 25, 35),
-        Item(Ellipse((0,0), 0.5, 1), 25, 35),
-        Item(Polygon([(0,0), (2,0), (2,2), (0,2)]), 25, 35),
-        Item(Ellipse((0,0), 1, 1), 25, 35)
+        Item(Polygon([(0, 0), (0, 6.), (6., 0)]), 10., 20.),
+        Item(Polygon([(0, 0), (0, 6.), (6., 0)]), 10., 10.),
+        Item(Ellipse((0, 0), 1.5, 0.3), 10., 5.),
+        Item(Ellipse((0, 0), 3, 0.3), 5., 5.),
+        Item(Ellipse((0, 0), 1.5, 0.3), 5., 5.),
+        Item(Ellipse((0, 0), 3, 0.3), 10., 5.)
     ]
     problem = Problem(container, items)
     solution = Solution(problem)
     problems.append(problem)
     solutions.append(solution)
-    positions = [(1,1), (3,1), (5,1), (7,1), (4,4)]
-    angles = [0, 0, 90, 0, 45]
-    for i, (pos, angle) in enumerate(zip(positions, angles)):
-        print_if_allowed(solution.add_item(i, pos, angle), can_print)
 
-    # Vấn đề 6: Hình chữ nhật chứa hỗn hợp hình tròn, ellipse và vuông
-    logger.info("Creating problem 6: Rectangle containing mix of circles, ellipses and squares")
-    container = Container(250, Polygon([(0,0), (12,0), (12,6), (0,6)]))
+    positions_angles = [
+        (0, (4.99, 5), 0.),
+        (1, (5.01, 5), 180.),
+        (3, (5., 1.65), 0.),
+        (4, (5., 8.35), 0.)
+    ]
+    for item, pos, angle in positions_angles:
+        print_if_allowed(solution.add_item(item, pos, angle), can_print)
+
+    # Problem 4: Ellipse with mixed shapes
+    logger.info("Creating problem 4: Ellipse with mixed shapes")
+    container = Container(50, Ellipse((3., 2.), 3., 2.))
     items = [
-        Item(Circle((0,0), 1), 40, 50),
-        Item(Ellipse((0,0), 1.2, 0.8), 35, 45),
-        Item(Polygon([(0,0), (2,0), (2,2), (0,2)]), 45, 55),
-        Item(Ellipse((0,0), 0.8, 1.2), 30, 40),
-        Item(Circle((0,0), 0.9), 35, 45)
+        Item(Ellipse((0., 0.), 0.7, 0.5), 5., 7.),
+        Item(Ellipse((0., 0.), 0.3, 0.1), 7., 2.),
+        Item(Ellipse((0., 0.), 0.2, 0.4), 8., 4.),
+        Item(Ellipse((0., 0.), 0.5, 0.3), 3., 5.),
+        Item(Circle((0., 0.), 0.4), 4., 5.),
+        Item(Circle((0., 0.), 0.25), 3., 2.),
+        Item(Circle((0., 0.), 0.2), 9., 5.),
+        Item(Circle((0., 0.), 0.1), 4., 3.),
+        Item(Circle((0., 0.), 0.7), 9., 3.)
     ]
     problem = Problem(container, items)
     solution = Solution(problem)
     problems.append(problem)
     solutions.append(solution)
-    positions = [(1,3), (3,3), (6,3), (9,3), (11,3)]
-    angles = [0, 45, 0, 90, 0]
-    for i, (pos, angle) in enumerate(zip(positions, angles)):
-        print_if_allowed(solution.add_item(i, pos, angle), can_print)
 
-    # Vấn đề 7: Hình đa giác phức tạp chứa các ellipse xoay
-    logger.info("Creating problem 7: Complex polygon containing rotated ellipses")
-    container = Container(300, Point(5,5).buffer(4, 6))
-    items = [Item(Ellipse((0,0), 0.8, 0.4), 50, 60) for _ in range(5)]
-    problem = Problem(container, items)
-    solution = Solution(problem)
-    problems.append(problem)
-    solutions.append(solution)
-    positions = [(3,3), (3,7), (7,3), (7,7), (5,5)]
-    angles = [0, 45, 90, 135, 180]
-    for i, (pos, angle) in enumerate(zip(positions, angles)):
-        print_if_allowed(solution.add_item(i, pos, angle), can_print)
+    positions_angles = [
+        (0, (3., 1.94), 0.),
+        (2, (3., 3.24), 90.),
+        (3, (3., 2.74), 0.),
+        (4, (2.25, 3.5), 0.),
+        (5, (3., 3.71), 0.),
+        (6, (3.46, 3.75), 0.),
+        (7, (3.44, 3.43), 0.),
+        (8, (3., 0.72), 0.)
+    ]
+    for item, pos, angle in positions_angles:
+        print_if_allowed(solution.add_item(item, pos, angle), can_print)
 
-    # Vấn đề 8: Hình ellipse cao chứa các hình chữ nhật nhỏ
-    logger.info("Creating problem 8: Tall ellipse containing small rectangles")
-    container = Container(220, Ellipse((2,6), 2, 6))
-    items = [Item(Polygon([(0,0), (1.5,0), (1.5,0.8), (0,0.8)]), 35, 45) for _ in range(5)]
-    problem = Problem(container, items)
-    solution = Solution(problem)
-    problems.append(problem)
-    solutions.append(solution)
-    positions = [(1,2), (1,4), (1,6), (1,8), (1,10)]
-    for i, pos in enumerate(positions):
-        print_if_allowed(solution.add_item(i, pos, 0), can_print)
-
-    # Vấn đề 9: Hình tròn lớn chứa các ellipse xoay
-    logger.info("Creating problem 9: Large circle containing rotated ellipses")
-    container = Container(280, Circle((6,6), 6))
-    items = [Item(Ellipse((0,0), 1.2, 0.6), 45, 55) for _ in range(5)]
-    problem = Problem(container, items)
-    solution = Solution(problem)
-    problems.append(problem)
-    solutions.append(solution)
-    positions = [(4,4), (4,8), (8,4), (8,8), (6,6)]
-    angles = [0, 45, 90, 135, 180]
-    for i, (pos, angle) in enumerate(zip(positions, angles)):
-        print_if_allowed(solution.add_item(i, pos, angle), can_print)
-
-    # Vấn đề 10: Hình chữ nhật rộng chứa hỗn hợp các hình
-    logger.info("Creating problem 10: Wide rectangle containing mix of shapes")
-    container = Container(350, Polygon([(0,0), (15,0), (15,5), (0,5)]))
+    # Problem 5: Complex polygon with holes
+    logger.info("Creating problem 5: Complex polygon with holes")
+    container_shape = MultiPolygon([(((0, 0), (0.5, 3), (0, 5), (5, 4.5), (5, 0)),
+                                   [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)),
+                                    ((0.3, 0.3), (0.3, 1.2), (1.6, 2.9), (0.75, 0.4)),
+                                    ((3.1, 1.5), (3.5, 4.5), (4.9, 4.4), (4.8, 1.2))])])
+    container = Container(100, container_shape)
     items = [
-        Item(Ellipse((0,0), 1.2, 0.8), 60, 70),
-        Item(Circle((0,0), 1), 55, 65),
-        Item(Polygon([(0,0), (2,0), (2,1.5), (0,1.5)]), 50, 60),
-        Item(Ellipse((0,0), 0.8, 1.2), 45, 55),
-        Item(Circle((0,0), 0.9), 40, 50)
+        Item(Polygon([(0, 0), (1, 1), (1, 0)]), 15., 32.),
+        Item(Polygon([(1, 2), (1.5, 3), (4, 5), (1, 4)]), 30., 100.),
+        Item(MultiPolygon([(((0., 0.), (0., 1.), (1., 1.), (1., 0.)),
+                           [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))])]), 12., 30.),
+        Item(Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2)]), 10., 10.),
+        Item(Circle((0., 0.), 0.4), 1., 14.),
+        Item(Circle((0., 0.), 0.1), 2., 12.),
+        Item(Ellipse((0., 0.), 0.5, 0.2), 3., 12.),
+        Item(Polygon([(0., 0.), (0., 0.3), (0.3, 0.3)]), 1., 10.),
+        Item(Ellipse((0., 0.), 0.8, 0.3), 10., 12.),
+        Item(Ellipse((0., 0.), 0.1, 0.05), 1., 2.)
     ]
     problem = Problem(container, items)
     solution = Solution(problem)
     problems.append(problem)
     solutions.append(solution)
-    positions = [(1.5,2.5), (4.5,2.5), (7.5,2.5), (10.5,2.5), (13.5,2.5)]
-    angles = [0, 0, 0, 90, 0]
-    for i, (pos, angle) in enumerate(zip(positions, angles)):
-        print_if_allowed(solution.add_item(i, pos, angle), can_print)
 
-    logger.info("Finished creating all problems")
+    positions_angles = [
+        (0, (1.2, 0.5), 0.),
+        (1, (2., 3.), 0.),
+        (2, (2.5, 2.5), 0.),
+        (3, (2.5, 2.4), 0.),
+        (4, (3.03, 0.73), 0.),
+        (5, (3.45, 1.02), 0.),
+        (6, (3., 3.82), 45.),
+        (7, (2.4, 0.7), 0.),
+        (8, (1.2, 4.07), 15.),
+        (9, (3.6, 0.45), 30.)
+    ]
+    for item, pos, angle in positions_angles:
+        print_if_allowed(solution.add_item(item, pos, angle), can_print)
+
+    # Problem 6: Complex polygon with multiple holes
+    logger.info("Creating problem 6: Complex polygon with multiple holes")
+    container = Container(150, MultiPolygon([(((0., 0.), (5., 0.), (5., 5.), (0., 5.)),
+                                            [((0.7, 0.7), (1.5, 0.7), (1.5, 1.5), (0.7, 1.5)),
+                                             ((2.4, 0.3), (4.3, 0.3), (4.3, 4.3), (2.4, 4.3)),
+                                             ((0.7, 2.7), (1.5, 2.7), (1.5, 3.5), (0.7, 3.5))])]))
+    items = [
+        Item(Polygon([(0., 0.), (1.6, 0.), (1.4, 0.2), (1.7, 1.)]), 6., 13.),
+        Item(Polygon([(0., 0.), (1.6, 3.), (2.8, 2.9), (1.5, 2.7), (1.9, 1.6)]), 11., 12.),
+        Item(Polygon([(0., 0.), (1.8, 1.5), (0., 2.8)]), 15., 25.),
+        Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.2), (0., 0.2)]), 14., 10.),
+        Item(Polygon([(0., 0.), (2.5, 0.), (1.5, 0.2), (0., 0.2)]), 10., 12.),
+        Item(Polygon([(0., 0.), (1.6, 0.), (0.8, 0.45), (0.6, 0.7), (0., 0.45)]), 17., 8.),
+        Item(Polygon([(0., 0.), (1.5, 0.), (0.8, 0.15), (0., 0.1)]), 13., 12.),
+        Item(Polygon([(0., 0.), (1.5, 0.), (0.8, 0.15), (0., 0.1)]), 15., 7.),
+        Item(Ellipse((0., 0.), 0.5, 0.3), 15., 8.),
+        Item(Ellipse((0., 0.), 0.2, 0.8), 14., 21.),
+        Item(Circle((0., 0.), 0.2), 18., 18.),
+        Item(Circle((0., 0.), 0.6), 11., 12.),
+        Item(Circle((0., 0.), 0.35), 12., 9.)
+    ]
+    problem = Problem(container, items)
+    solution = Solution(problem)
+    problems.append(problem)
+    solutions.append(solution)
+
+    positions_angles = [
+        (0, (0.9, 2.02), 0.),
+        (3, (0.78, 0.12), 0.),
+        (4, (2.8, 0.12), 0.),
+        (5, (0.8, 3.85), 0.),
+        (6, (0.78, 0.3), 0.),
+        (7, (2.3, 2.57), 90.),
+        (8, (0.3, 2.98), 90.),
+        (9, (2.17, 1.05), 0.),
+        (10, (1.8, 0.45), 0.),
+        (11, (1.77, 4.38), 0.),
+        (12, (0.35, 4.63), 0.)
+    ]
+    for item, pos, angle in positions_angles:
+        print_if_allowed(solution.add_item(item, pos, angle), can_print)
+
+    # Problem 7: Complex polygon with irregular shape
+    logger.info("Creating problem 7: Complex polygon with irregular shape")
+    container = Container(122, Polygon([(3.5, 0.6), (0.5, 0.9), (3.7, 5.5), (1.7, 4.), 
+                                      (0., 6.5), (0.2, 8.6), (0.8, 9.8), (1.7, 8.9),
+                                      (2, 9.1), (4.4, 9.3), (4.2, 6.7), (4.9, 7.5),
+                                      (6.5, 8.4), (6.6, 7.9), (7.4, 8.2), (8.7, 5.5),
+                                      (9.3, 4.8), (6.3, 0.2), (5., 3.5), (5, 0.7)]))
+    items = [
+        Item(Polygon([(0, 3), (0, 2.), (4., 0)]), 5., 6.),
+        Item(Polygon([(0, 0), (1., 2.), (2.5, 2), (1, 1.2)]), 10., 7.),
+        Item(Polygon([(0, 1), (1, 2.), (3., 0)]), 9., 4.),
+        Item(Polygon([(0, 0.5), (1, 1.), (3, 1), (2., 0)]), 19., 14.),
+        Item(Polygon([(0, 0.6), (2, 1), (2., 1.5), (1.2, 1.5)]), 19., 15.),
+        Item(Polygon([(0, 0), (0, 2.), (0.5, 2), (0.5, 0.5), (2.5, 0.5), (2.5, 0)]), 7., 15.),
+        Item(MultiPolygon([(((0.0, 0.0), (0.0, 1.8), (1.0, 2.7), (2.3, 0.0)),
+                           [((0.2, 0.2), (0.2, 1.4), (0.7, 2.1), (1.8, 0.5))])]), 12., 6.),
+        Item(MultiPolygon([(((0.0, 0.0), (1.0, 1.8), (2.0, 2.5), (2.6, 0.7)),
+                           [((0.2, 0.2), (1.2, 1.4), (2.1, 1.7))])]), 7., 13.),
+        Item(Ellipse((0, 0), 0.5, 0.2), 4., 9.),
+        Item(Ellipse((0, 0), 0.2, 1.5), 21., 14.),
+        Item(Ellipse((0, 0), 2.5, 3.5), 16., 30.),
+        Item(Circle((0, 0), 0.4), 7., 12.),
+        Item(Circle((0, 0), 0.3), 10., 3.),
+        Item(Circle((0, 0), 1.), 1., 3.)
+    ]
+    problem = Problem(container, items)
+    solution = Solution(problem)
+    problems.append(problem)
+    solutions.append(solution)
+
+    positions_angles = [
+        (0, (5.73, 3.02), 318.),
+        (1, (6.3, 4.1), 40.),
+        (2, (4.58, 2.5), 315.),
+        (3, (1.3, 5.4), 320.),
+        (4, (1.4, 1.7), 20.),
+        (5, (2.9, 7.9), 180.),
+        (6, (8.2, 4), 300.),
+        (7, (2.5, 7.4), 340.),
+        (8, (7.3, 4.), 320.),
+        (9, (2.9, 3.9), 330.),
+        (11, (7.8, 4.4), 0.),
+        (13, (6.2, 6.8), 0.)
+    ]
+    for item, pos, angle in positions_angles:
+        print_if_allowed(solution.add_item(item, pos, angle), can_print)
+
+    # Problem 8: Rectangle with special shape
+    logger.info("Creating problem 8: Rectangle with special shape")
+    container = Container(100, Polygon([(0., 0.), (0., 5.), (2.5, 3.4), (5., 5.), (5., 0), (2.5, 1.6)]))
+    items = [
+        Item(Polygon([(0., 0.), (0., 3.), (0.25, 3.), (0.25, 0.25), (2., 2.5), 
+                     (3.75, 0.25), (3.75, 3.), (4., 3.), (4., 0.), (3.75, 0.), 
+                     (2., 2.), (0.25, 0.)]), 100., 100.),
+        Item(Polygon([(0., 0.), (1.6, 1.), (1.8, 1.9), (0.9, 1.6)]), 11., 12.),
+        Item(Polygon([(0., 0.), (1.8, 2.5), (0., 1.8)]), 15., 5.),
+        Item(Polygon([(0., 0.), (0.5, 0.), (1.2, 0.4), (0., 0.5)]), 4., 10.),
+        Item(Polygon([(0., 0.), (2.5, 0.), (1.5, 0.2), (0., 0.5)]), 1., 2.)
+    ]
+    problem = Problem(container, items)
+    solution = Solution(problem)
+    problems.append(problem)
+    solutions.append(solution)
+
+    print_if_allowed(solution.add_item(0, (2.5, 2.02), 0.), can_print)
+
+    # Problem 9: Circle with concentric rings
+    logger.info("Creating problem 9: Circle with concentric rings")
+    container = Container(200, Point(5, 5).buffer(5, 3))
+    items = [
+        Item(MultiPolygon([(Point(5, 5).buffer(4.7, 2).exterior.coords,
+                           [((9., 5.), (5., 1.), (1., 5.), (5., 9.))])]), 120., 110.),
+        Item(Polygon([(0., 0.), (0., 5.), (5., 5.), (5., 0.)]), 50., 80.)
+    ]
+    problem = Problem(container, items)
+    solution = Solution(problem)
+    problems.append(problem)
+    solutions.append(solution)
+
+    print_if_allowed(solution.add_item(0, (5., 5.), 0.), can_print)
+    print_if_allowed(solution.add_item(1, (5., 5.), 45.), can_print)
+
+    # Problem 10: Cross-shaped container
+    logger.info("Creating problem 10: Cross-shaped container")
+    container = Container(150, Polygon([(2., 5.), (3., 5), (3., 3.), (5., 3.), 
+                                      (5., 2.), (3., 2.), (3., 0.), (2., 0.), 
+                                      (2., 2.), (0., 2.), (0., 3.), (2., 3.)]))
+    items = [Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95)]), 10., 10.) for _ in range(10)]
+    items.extend([Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.) 
+                 for _ in range(6)])
+    items.extend([Item(Polygon([(0., 0.), (0.8, 0.), (0.8, 0.45), (0., 0.45)]), 20., 30.) 
+                 for _ in range(2)])
+    items.extend([Item(Polygon([(0., 0.), (0.8, 0.), (0.8, 0.1), (0., 0.1)]), 5., 25.) 
+                 for _ in range(2)])
+    
+    problem = Problem(container, items)
+    solution = Solution(problem)
+    problems.append(problem)
+    solutions.append(solution)
+
+    positions_angles = [
+        (0, (4.23, 2.48), 0.), (1, (4.23, 2.52), 180.),
+        (2, (0.77, 2.48), 0.), (3, (0.77, 2.52), 180.),
+        (4, (2.48, 0.76), 270.), (5, (2.52, 0.76), 90.),
+        (6, (2.48, 4.24), 270.), (7, (2.52, 4.24), 90.),
+        (8, (2.5, 2.48), 0.), (9, (2.5, 2.52), 180.),
+        (16, (2.5, 3.25), 0.), (17, (2.5, 1.75), 0.),
+        (18, (1.64, 2.5), 90.), (19, (3.36, 2.5), 90.)
+    ]
+    for item, pos, angle in positions_angles:
+        print_if_allowed(solution.add_item(item, pos, angle), can_print)
+
+    elapsed_time = get_time_since(start_time)
+    print_if_allowed(f"Manual elapsed time: {round(elapsed_time, 3)} ms", can_print)
+
     return problems, [str(i + 1) for i in range(len(problems))], solutions
 
 

@@ -100,71 +100,31 @@ def solve_problem(problem, grid_size=None, min_cell_size=MIN_CELL_SIZE,
     # Sort items by value-to-weight ratio
     sorted_items = sort_items_by_value(problem)
     
-    # Initialize DP table and best solution
-    dp_table = {}  # {state_key: value}
-    best_solution = None
+    # Initialize solution
+    best_solution = Solution(problem)
     best_value = 0
     
-    def dp_solve(current_solution, remaining_items, remaining_weight):
-        nonlocal best_value, best_solution
-        # Create a unique key for the current state
-        state_key = (frozenset(current_solution.placed_items.keys()), remaining_weight)
-        
-        # If this state has been computed
-        if state_key in dp_table:
-            return dp_table[state_key]
-        
-        # Calculate upper bound for pruning
-        remaining_values = [problem.items[item_index].value for item_index in remaining_items]
-        upper_bound = current_solution.value + sum(remaining_values)
-        if upper_bound <= best_value:
-            return current_solution.value  # Prune this branch
-        
-        # Update best solution if current is better
-        if current_solution.value > best_value:
-            best_value = current_solution.value
-            best_solution = copy.deepcopy(current_solution)
-        
-        # Base case: no items left or no remaining weight
-        if not remaining_items or remaining_weight <= 0:
-            return current_solution.value
-        
-        # Try placing each remaining item
-        for item_index in sorted_items:
-            if item_index not in remaining_items:
-                continue
+    # Try placing items at strategic points
+    for item_index in sorted_items:
+        item = problem.items[item_index]
+        if item.weight > problem.container.max_weight - best_solution.weight:
+            continue
             
-            item = problem.items[item_index]
-            if item.weight > remaining_weight:
-                continue
-            
-            # Limit placements: only try a subset of strategic points and rotations
-            for pos in strategic_points:
-                for angle in rotation_angles:
-                    # Check if the item can be placed without modifying current_solution
-                    if can_place_item(current_solution, item_index, pos, angle):
-                        # Create a new solution by placing the item
-                        new_solution = copy.deepcopy(current_solution)
-                        new_solution.add_item(item_index, pos, angle)
-                        
-                        new_remaining_items = remaining_items - {item_index}
-                        new_remaining_weight = remaining_weight - item.weight
-                        
-                        # Recursive call
-                        dp_solve(new_solution, new_remaining_items, new_remaining_weight)
-        
-        # Store result in DP table
-        dp_table[state_key] = current_solution.value
-        return current_solution.value
-    
-    # Call dp_solve with initial state
-    initial_solution = Solution(problem)
-    remaining_items = set(range(len(problem.items)))
-    dp_solve(initial_solution, remaining_items, problem.container.max_weight)
+        placed = False
+        for pos in strategic_points:
+            if placed:
+                break
+            for angle in rotation_angles:
+                # Create temporary solution to test placement
+                temp_solution = copy.deepcopy(best_solution)
+                if can_place_item(temp_solution, item_index, pos, angle):
+                    best_solution = temp_solution
+                    best_value = best_solution.value
+                    placed = True
+                    break
     
     if calculate_times:
         dp_time = get_time_since(start_time)
-        # Compute total time and proportions
         total_time = discretize_time + dp_time
         time_dict = {
             "Discretizing space": (discretize_time, discretize_time / total_time),
