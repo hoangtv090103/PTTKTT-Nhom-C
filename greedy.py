@@ -50,7 +50,7 @@ def get_weighted_sum_of_item_value_and_profitability_ratio(item, value_weight, a
 def select_item(items_with_profit_ratio):
     """Cho một danh sách các tuple dưới dạng (chỉ mục của mục, tỷ lệ lợi nhuận của mục, mục), chọn một mục theo tỷ lệ lợi nhuận của nó và trả về chỉ mục của nó"""
 
-    # tìm tổng tỷ lệ lợi nhuận, mã dựa trên random.choices() từ thư viện chuẩn của Python
+    # tìm tổng tỷ lệ lợi nhuận
     cumulative_profit_ratios = list(itertools.accumulate(item_with_profit_ratio[1] for item_with_profit_ratio in items_with_profit_ratio))
     profit_ratio_sum = cumulative_profit_ratios[-1]
 

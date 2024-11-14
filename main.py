@@ -27,6 +27,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[logging.FileHandler("packing.log"), logging.StreamHandler()],
+    encoding="utf-8",
 )
 logger = logging.getLogger(__name__)
 
@@ -294,22 +295,28 @@ def create_knapsack_packing_problems_with_manual_solutions(can_print=False):
         ),
     )
     items = [
-        Item(Polygon([(0.0, 0.0), (1.6, 0.0), (1.4, 0.2), (1.7, 1.0)]), 6.0, 13.0),
+        Item(Polygon([(0.0, 0.0), (1.6, 0.0),
+             (1.4, 0.2), (1.7, 1.0)]), 6.0, 13.0),
         Item(
             Polygon([(0.0, 0.0), (1.6, 3.0), (2.8, 2.9), (1.5, 2.7), (1.9, 1.6)]),
             11.0,
             12.0,
         ),
         Item(Polygon([(0.0, 0.0), (1.8, 1.5), (0.0, 2.8)]), 15.0, 25.0),
-        Item(Polygon([(0.0, 0.0), (1.5, 0.0), (1.5, 0.2), (0.0, 0.2)]), 14.0, 10.0),
-        Item(Polygon([(0.0, 0.0), (2.5, 0.0), (1.5, 0.2), (0.0, 0.2)]), 10.0, 12.0),
+        Item(Polygon([(0.0, 0.0), (1.5, 0.0),
+             (1.5, 0.2), (0.0, 0.2)]), 14.0, 10.0),
+        Item(Polygon([(0.0, 0.0), (2.5, 0.0),
+             (1.5, 0.2), (0.0, 0.2)]), 10.0, 12.0),
         Item(
-            Polygon([(0.0, 0.0), (1.6, 0.0), (0.8, 0.45), (0.6, 0.7), (0.0, 0.45)]),
+            Polygon([(0.0, 0.0), (1.6, 0.0), (0.8, 0.45),
+                    (0.6, 0.7), (0.0, 0.45)]),
             17.0,
             8.0,
         ),
-        Item(Polygon([(0.0, 0.0), (1.5, 0.0), (0.8, 0.15), (0.0, 0.1)]), 13.0, 12.0),
-        Item(Polygon([(0.0, 0.0), (1.5, 0.0), (0.8, 0.15), (0.0, 0.1)]), 15.0, 7.0),
+        Item(Polygon([(0.0, 0.0), (1.5, 0.0),
+             (0.8, 0.15), (0.0, 0.1)]), 13.0, 12.0),
+        Item(Polygon([(0.0, 0.0), (1.5, 0.0),
+             (0.8, 0.15), (0.0, 0.1)]), 15.0, 7.0),
         Item(Ellipse((0.0, 0.0), 0.5, 0.3), 15.0, 8.0),
         Item(Ellipse((0.0, 0.0), 0.2, 0.8), 14.0, 21.0),
         Item(Circle((0.0, 0.0), 0.2), 18.0, 18.0),
@@ -367,21 +374,22 @@ def create_knapsack_packing_problems_with_manual_solutions(can_print=False):
         ),
     )
     items = [Item(Polygon([(0, 3), (0, 2.), (4., 0)]), 5., 6.),
-            Item(Polygon([(0, 0), (1., 2.), (2.5, 2), (1, 1.2)]), 10., 7.),
-            Item(Polygon([(0, 1), (1, 2.), (3., 0)]), 9., 4.),
-            Item(Polygon([(0, 0.5), (1, 1.), (3, 1), (2., 0)]), 19., 14.),
-            Item(Polygon([(0, 0.6), (2, 1), (2., 1.5), (1.2, 1.5)]), 19., 15.),
-            Item(Polygon([(0, 0), (0, 2.), (0.5, 2), (0.5, 0.5), (2.5, 0.5), (2.5, 0)]), 7., 15.),
-            Item(MultiPolygon([(((0.0, 0.0), (0.0, 1.8), (1.0, 2.7), (2.3, 0.0)),
+             Item(Polygon([(0, 0), (1., 2.), (2.5, 2), (1, 1.2)]), 10., 7.),
+             Item(Polygon([(0, 1), (1, 2.), (3., 0)]), 9., 4.),
+             Item(Polygon([(0, 0.5), (1, 1.), (3, 1), (2., 0)]), 19., 14.),
+             Item(Polygon([(0, 0.6), (2, 1), (2., 1.5), (1.2, 1.5)]), 19., 15.),
+             Item(Polygon([(0, 0), (0, 2.), (0.5, 2),
+                  (0.5, 0.5), (2.5, 0.5), (2.5, 0)]), 7., 15.),
+             Item(MultiPolygon([(((0.0, 0.0), (0.0, 1.8), (1.0, 2.7), (2.3, 0.0)),
                                 [((0.2, 0.2), (0.2, 1.4), (0.7, 2.1), (1.8, 0.5))])]), 12., 6.),
-            Item(MultiPolygon([(((0.0, 0.0), (1.0, 1.8), (2.0, 2.5), (2.6, 0.7)),
+             Item(MultiPolygon([(((0.0, 0.0), (1.0, 1.8), (2.0, 2.5), (2.6, 0.7)),
                                 [((0.2, 0.2), (1.2, 1.4), (2.1, 1.7))])]), 7., 13.),
-            Item(Ellipse((0, 0), 0.5, 0.2), 4., 9.),
-            Item(Ellipse((0, 0), 0.2, 1.5), 21., 14.),
-            Item(Ellipse((0, 0), 2.5, 3.5), 16., 30.),
-            Item(Circle((0, 0), 0.4), 7., 12.),
-            Item(Circle((0, 0), 0.3), 10., 3.),
-            Item(Circle((0, 0), 1.), 1., 3.)]
+             Item(Ellipse((0, 0), 0.5, 0.2), 4., 9.),
+             Item(Ellipse((0, 0), 0.2, 1.5), 21., 14.),
+             Item(Ellipse((0, 0), 2.5, 3.5), 16., 30.),
+             Item(Circle((0, 0), 0.4), 7., 12.),
+             Item(Circle((0, 0), 0.3), 10., 3.),
+             Item(Circle((0, 0), 1.), 1., 3.)]
     problem = Problem(container, items)
     solution = Solution(problem)
     problems.append(problem)
@@ -404,16 +412,23 @@ def create_knapsack_packing_problems_with_manual_solutions(can_print=False):
     logger.info("Creating problem 8: Rectangle with special shape")
     container = Container(
         100,
-        Polygon([(0.0, 0.0), (0.0, 5.0), (2.5, 3.4), (5.0, 5.0), (5.0, 0), (2.5, 1.6)]),
+        Polygon([(0.0, 0.0), (0.0, 5.0), (2.5, 3.4),
+                (5.0, 5.0), (5.0, 0), (2.5, 1.6)]),
     )
     items = [Item(Polygon([(0., 0.), (0., 3.), (0.25, 3.), (0.25, 0.25), (2., 2.5), (3.75, 0.25), (3.75, 3.), (4., 3.), (4., 0.), (3.75, 0.), (2., 2.), (0.25, 0.)]), 100., 100.),
-             Item(Polygon([(0., 0.), (1.6, 1.), (1.8, 1.9), (0.9, 1.6)]), 11., 12.),
+             Item(
+                 Polygon([(0., 0.), (1.6, 1.), (1.8, 1.9), (0.9, 1.6)]), 11., 12.),
              Item(Polygon([(0., 0.), (1.8, 2.5), (0., 1.8)]), 15., 5.),
-             Item(Polygon([(0., 0.), (0.5, 0.), (1.2, 0.4), (0., 0.5)]), 4., 10.),
-             Item(Polygon([(0., 0.), (2.5, 0.), (1.5, 0.2), (0., 0.5)]), 1., 2.),
-             Item(Polygon([(0., 0.), (0.7, 0.25), (1.6, 1.5), (0.6, 0.7), (0., 0.45)]), 17., 8.),
-             Item(Polygon([(0., 0.), (0.8, 0.5), (1.5, 1.2), (0., 0.5)]), 13., 11.),
-             Item(Polygon([(0., 0.), (1.5, 0.), (1.2, 0.6), (0., 0.3)]), 15., 7.),
+             Item(
+                 Polygon([(0., 0.), (0.5, 0.), (1.2, 0.4), (0., 0.5)]), 4., 10.),
+             Item(
+                 Polygon([(0., 0.), (2.5, 0.), (1.5, 0.2), (0., 0.5)]), 1., 2.),
+             Item(Polygon([(0., 0.), (0.7, 0.25), (1.6, 1.5),
+                  (0.6, 0.7), (0., 0.45)]), 17., 8.),
+             Item(
+                 Polygon([(0., 0.), (0.8, 0.5), (1.5, 1.2), (0., 0.5)]), 13., 11.),
+             Item(
+                 Polygon([(0., 0.), (1.5, 0.), (1.2, 0.6), (0., 0.3)]), 15., 7.),
              Item(Ellipse((0., 0.), 0.6, 0.4), 15., 8.),
              Item(Ellipse((0., 0.), 2., 0.5), 15., 8.),
              Item(Ellipse((0., 0.), 0.5, 0.3), 24., 6.),
@@ -434,20 +449,22 @@ def create_knapsack_packing_problems_with_manual_solutions(can_print=False):
     container = Container(200, Point(5, 5).buffer(5, 3))
     items = [Item(MultiPolygon([(Point(5, 5).buffer(4.7, 2).exterior.coords,
                                 [((9., 5.), (5., 1.), (1., 5.), (5., 9.))])]), 120., 110.),
-            Item(Polygon([(0., 0.), (0., 5.), (5., 5.), (5., 0.)]), 50., 80.),
-            Item(Polygon([(1., 4.2), (1.5, 2.), (4., 0)]), 15., 14.),
-            Item(Polygon([(0, 0), (1., 2.), (2.5, 2), (1, 1.2)]), 11., 11.),
-            Item(Polygon([(0, 1), (1, 2.), (3., 0)]), 11., 4.),
-            Item(Polygon([(0, 0.5), (1, 1.), (3, 1), (2., 0)]), 19., 14.),
-            Item(Polygon([(0, 0.4), (1.8, .8), (1.5, 1.3), (1.2, 3.3)]), 17., 15.),
-            Item(Polygon([(0, 0), (0, 2.), (0.9, 2), (0.9, 0.5), (1.5, 0.5), (1.5, 0)]), 70., 15.),
-            Item(Ellipse((0, 0), 0.8, 1.2), 14., 13.),
-            Item(Ellipse((0, 0), 1.2, 1.5), 12., 6.),
-            Item(Ellipse((0, 0), 2.5, 1.7), 16., 10.),
-            Item(Circle((0, 0), 0.7), 17., 11.),
-            Item(Circle((0, 0), 0.8), 13., 10.),
-            Item(Circle((0, 0), 1.), 4., 4.),
-            Item(Circle((0, 0), 2.), 22., 8.)]
+             Item(Polygon([(0., 0.), (0., 5.), (5., 5.), (5., 0.)]), 50., 80.),
+             Item(Polygon([(1., 4.2), (1.5, 2.), (4., 0)]), 15., 14.),
+             Item(Polygon([(0, 0), (1., 2.), (2.5, 2), (1, 1.2)]), 11., 11.),
+             Item(Polygon([(0, 1), (1, 2.), (3., 0)]), 11., 4.),
+             Item(Polygon([(0, 0.5), (1, 1.), (3, 1), (2., 0)]), 19., 14.),
+             Item(
+                 Polygon([(0, 0.4), (1.8, .8), (1.5, 1.3), (1.2, 3.3)]), 17., 15.),
+             Item(Polygon([(0, 0), (0, 2.), (0.9, 2),
+                  (0.9, 0.5), (1.5, 0.5), (1.5, 0)]), 70., 15.),
+             Item(Ellipse((0, 0), 0.8, 1.2), 14., 13.),
+             Item(Ellipse((0, 0), 1.2, 1.5), 12., 6.),
+             Item(Ellipse((0, 0), 2.5, 1.7), 16., 10.),
+             Item(Circle((0, 0), 0.7), 17., 11.),
+             Item(Circle((0, 0), 0.8), 13., 10.),
+             Item(Circle((0, 0), 1.), 4., 4.),
+             Item(Circle((0, 0), 2.), 22., 8.)]
     problem = Problem(container, items)
     problems.append(problem)
 
@@ -488,15 +505,24 @@ def create_knapsack_packing_problems_with_manual_solutions(can_print=False):
              Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95)]), 10., 10.),
              Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95)]), 10., 10.),
              Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95)]), 10., 10.),
-             Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
-             Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
-             Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
-             Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
-             Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
-             Item(Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
-             Item(Polygon([(0., 0.), (0.8, 0.), (0.8, 0.45), (0., 0.45)]), 20., 30.),
-             Item(Polygon([(0., 0.), (0.8, 0.), (0.8, 0.45), (0., 0.45)]), 20., 30.),
-             Item(Polygon([(0., 0.), (0.8, 0.), (0.8, 0.1), (0., 0.1)]), 5., 25.),
+             Item(
+                 Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
+             Item(
+                 Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
+             Item(
+                 Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
+             Item(
+                 Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
+             Item(
+                 Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
+             Item(
+                 Polygon([(0., 0.), (1.5, 0.), (1.5, 0.95), (0., 0.95)]), 20., 10.),
+             Item(
+                 Polygon([(0., 0.), (0.8, 0.), (0.8, 0.45), (0., 0.45)]), 20., 30.),
+             Item(
+                 Polygon([(0., 0.), (0.8, 0.), (0.8, 0.45), (0., 0.45)]), 20., 30.),
+             Item(
+                 Polygon([(0., 0.), (0.8, 0.), (0.8, 0.1), (0., 0.1)]), 5., 25.),
              Item(Polygon([(0., 0.), (0.8, 0.), (0.8, 0.1), (0., 0.1)]), 5., 25.)]
     problem = Problem(container, items)
     problems.append(problem)
@@ -527,11 +553,7 @@ def execute_algorithm_with_params(params):
     logger.info(f"Executing algorithm {algorithm.__name__} on problem")
     start_time = time.time()
 
-    if calculate_value_evolution:
-        # Nếu hàm solve_problem không hỗ trợ return_population_fitness_per_generation, bỏ qua tham số này
-        result = algorithm(problem, calculate_times=calculate_times)
-    else:
-        result = algorithm(problem, calculate_times=calculate_times)
+    result = algorithm(problem, calculate_times=calculate_times)
 
     elapsed_time = get_time_since(start_time)
     solution = result[0]
@@ -602,7 +624,8 @@ def run():
             ("Quy hoạch động", dp.solve_problem),
             ("Di truyền", evolutionary.solve_problem),
         ]:
-            logger.info(f"Running algorithm {algorithm_name} on problem {problem_name}")
+            logger.info(
+                f"Running algorithm {algorithm_name} on problem {problem_name}")
             solutions, values, value_evolutions, times, time_divisions = (
                 execute_algorithm(
                     algorithm=algorithm,
@@ -671,7 +694,8 @@ def visualize_and_save_experiments(
             if type(solution) == Solution:
                 problem_results = [
                     len(problem.items),
-                    round(len(solution.placed_items) / len(problem.items) * 100, 2),
+                    round(len(solution.placed_items) /
+                          len(problem.items) * 100, 2),
                     round(
                         sum(
                             [
@@ -765,7 +789,8 @@ def visualize_and_save_experiments(
         or save_algorithm_comparison
     ):
         for problem_name in experiment_dict.keys():
-            logger.info(f"Processing visualizations for problem {problem_name}")
+            logger.info(
+                f"Processing visualizations for problem {problem_name}")
 
             problem, manual_solution, algorithm_dict = experiment_dict[
                 problem_name
@@ -778,7 +803,8 @@ def visualize_and_save_experiments(
                 logger.info(f"Created problem directory: {problem_dir_path}")
 
             plotted_problem_name = (
-                "Problem " + problem_name if len(problem_name) < 5 else problem_name
+                "Problem " +
+                problem_name if len(problem_name) < 5 else problem_name
             )
 
             # if needed, show/save a plot of the initial state (empty solution), and the final state of a manual solution
@@ -1013,5 +1039,40 @@ def visualize_and_save_experiments(
 if __name__ == "__main__":
     logger.info("Starting main program execution")
     experiment_dict = run()
-    visualize_and_save_experiments(experiment_dict, output_dir="experiment_results/")
+    visualize_and_save_experiments(
+        experiment_dict, output_dir="experiment_results/")
     logger.info("Program execution completed")
+
+# problems, solutions = [], []
+
+# # Problem 1: Circle containing squares and circles
+# logger.info("Creating problem 1: Circle containing squares and circles")
+# container = Container(150, Circle((3.3, 3.3), radius=3.3))
+# items = [
+#     Item(Polygon([(0, 0), (0, 4.5), (4.5, 4.5), (4.5, 0)]), 40.0, 50.0),
+#     Item(Circle((0, 0), 0.45), 20.0, 5.0),
+#     Item(Circle((0, 0), 0.45), 20.0, 10.0),
+#     Item(Circle((0, 0), 0.45), 20.0, 15.0),
+#     Item(Circle((0, 0), 0.45), 20.0, 20.0),
+# ]
+# problem = Problem(container, items)
+# solution = Solution(problem)
+
+# solution.visualize(
+#     title_override="Initial state",
+#     show_plot=True,
+#     save_path="empty_solution.png",
+#     show_item_value_and_weight=True,
+#     show_value_weight_ratio_bar=True,
+# )
+
+# positions_angles = [
+#     (0, (3.3, 3.3), 0.0),
+#     (1, (3.3, 6.05), 0.0),
+#     (2, (3.3, 0.55), 0.0),
+#     (3, (6.05, 3.3), 0.0),
+#     (4, (0.55, 3.3), 0.0),
+# ]
+
+# for item, pos, angle in positions_angles:
+#     print_if_allowed(solution.add_item(item, pos, angle), can_print=False)

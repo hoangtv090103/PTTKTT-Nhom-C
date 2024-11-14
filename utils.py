@@ -194,7 +194,7 @@ def create_square(center, side):
 
 
 def create_random_triangle_in_rectangle_corner(min_x, min_y, max_x, max_y):
-    """Create a triangle that lies in a corner of the rectangle defined by the passed bounds, i.e. one of the vertices of the triangle is one of the points of the rectangle, and the other two vertices lie on sides of the rectangle"""
+    """Tạo một tam giác nằm ở một góc của hình chữ nhật được xác định bởi các ranh giới được chuyển tiếp, tức là một trong các đỉnh của tam giác là một trong các điểm của hình chữ nhật, và hai đỉnh còn lại nằm trên các cạnh của hình chữ nhật"""
 
     # determine the points of the rectangle from its bounds
     rectangle_points = get_rectangle_points_from_bounds(min_x, min_y, max_x, max_y)
@@ -207,6 +207,8 @@ def create_random_triangle_in_rectangle_corner(min_x, min_y, max_x, max_y):
 
     # create the triangle
     return Polygon(triangle_points)
+
+
 
 
 def create_random_quadrilateral_in_rectangle_corners(min_x, min_y, max_x, max_y):

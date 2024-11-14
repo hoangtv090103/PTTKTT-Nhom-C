@@ -43,7 +43,7 @@ class Solution:
         return sum([item.shape.area for item in self.placed_items if hasattr(item, 'shape')])
 
     def get_global_bounds(self):
-        """Return the extreme points of the shape defining the global bounding rectangle"""
+        """Trả về các giới hạn toàn cầu của hình dạng, bao gồm cả các hình dạng được đặt và không được đặt"""
 
         global_min_x = global_min_y = np.inf
         global_max_x = global_max_y = -np.inf
@@ -67,36 +67,36 @@ class Solution:
         return global_min_x, global_min_y, global_max_x, global_max_y
 
     def get_global_bounding_rectangle_area(self):
-        """Return the area of the rectangle defined by the extreme points of the shape"""
+        """Trả về diện tích của hình chữ nhật giới hạn toàn cầu của tất cả các hình dạng, bao gồm cả các hình dạng được đặt và không"""
 
-        # find the extreme points defining the global bounding rectangle
+        # Tìm các giới hạn toàn cầu của hình dạng
         min_x, min_y, max_x, max_y = self.get_global_bounds()
 
-        # return the area of the bounding rectangle
+        # Trả về diện tích của hình chữ nhật giới hạn bao quanh
         return abs(min_x - max_x) * abs(min_x - max_y)
-    
 
     def get_random_placed_item_index(self, indices_to_ignore=None):
-        """Randomly select and return an index of a placed item, excluding those to ignore"""
+        """Chọn ngẫu nhiên và trả về một chỉ số của một mục được đặt, loại trừ những mục cần bỏ qua"""
 
-        # get the indices of placed items, discarding those that should be ignored
+        # lấy các chỉ số của các mục được đặt, loại bỏ những mục cần bỏ qua
         if not indices_to_ignore:
             valid_placed_item_indices = list(self.placed_items.keys())
         else:
-            valid_placed_item_indices = [item_index for item_index in self.placed_items.keys() if item_index not in indices_to_ignore]
+            valid_placed_item_indices = [item_index for item_index in self.placed_items.keys(
+            ) if item_index not in indices_to_ignore]
 
-        # there may be no valid item
         if not valid_placed_item_indices:
             return None
 
-        # return a randomly selected index
+        # Trả về một chỉ số được chọn ngẫu nhiên
         return random.choice(valid_placed_item_indices)
 
     def _add_item(self, item_index, position, rotation):
         """Place the problem's item with the specified index in the container in the passed position and having the specified rotation, without checking if it leads to an invalid solution"""
 
         # the item is marked as placed, storing information about the position and rotation of the shape
-        self.placed_items[item_index] = PlacedShape(self.problem.items[item_index].shape, position, rotation)
+        self.placed_items[item_index] = PlacedShape(
+            self.problem.items[item_index].shape, position, rotation)
 
         # update the weight and value of the container in the current solution
         self.weight += self.problem.items[item_index].weight
@@ -238,14 +238,17 @@ class Solution:
                 direction = (direction[0] / norm, direction[1] / norm)
 
                 # create a line that goes through the reference position of the item and has the passed direction
-                line = LineString([placed_item.position, (placed_item.position[0] + direction[0] * max_dist_to_check, placed_item.position[1] + direction[1] * max_dist_to_check)])
+                line = LineString([placed_item.position, (placed_item.position[0] + direction[0]
+                                  * max_dist_to_check, placed_item.position[1] + direction[1] * max_dist_to_check)])
 
                 # find the intersection points of the line with other placed items or the container
                 intersection_points = list()
-                intersection_points.extend(get_intersection_points_between_shapes(line, self.problem.container.shape))
+                intersection_points.extend(get_intersection_points_between_shapes(
+                    line, self.problem.container.shape))
                 for other_index, other_placed_shape in self.placed_items.items():
                     if item_index != other_index:
-                        intersection_points.extend(get_intersection_points_between_shapes(line, other_placed_shape.shape))
+                        intersection_points.extend(
+                            get_intersection_points_between_shapes(line, other_placed_shape.shape))
 
                 # at least an intersection should exist
                 if intersection_points:
@@ -265,7 +268,8 @@ class Solution:
                         # the segment between the item's reference position and the nearest intersection is divided in a discrete number of points
                         iter_dist = min_dist / point_num
                         for i in range(point_num - 1):
-                            points_to_check.append((placed_item.position[0] + direction[0] * i * iter_dist, placed_item.position[1] + direction[1] * i * iter_dist))
+                            points_to_check.append(
+                                (placed_item.position[0] + direction[0] * i * iter_dist, placed_item.position[1] + direction[1] * i * iter_dist))
                         points_to_check.append(intersection_point)
 
                         # perform binary search to find the furthest point (among those to check) where the item can be placed in a valid way; binary search code is based on bisect.bisect_left from standard Python library, but adapted to perform placement attempts
@@ -273,7 +277,8 @@ class Solution:
                         nearest_point_index = 1
                         furthest_point_index = len(points_to_check)
                         while nearest_point_index < furthest_point_index:
-                            middle_point_index = (nearest_point_index + furthest_point_index) // 2
+                            middle_point_index = (
+                                nearest_point_index + furthest_point_index) // 2
                             if self.move_item_to(item_index, points_to_check[middle_point_index]):
                                 nearest_point_index = middle_point_index + 1
                                 has_moved = True
@@ -285,7 +290,7 @@ class Solution:
         return False
 
     def _rotate_item(self, item_index, angle, has_checked_item_in_container=False, rotate_internal_items=False):
-        """Rotate the item with the passed index around its reference position according to the passed rotation angle, expressed in degrees, without checking if it leads to an invalid solution"""
+        """Xoay vật phẩm có chỉ số được truyền vào quanh vị trí tham chiếu của nó theo góc xoay được truyền vào, được biểu thị bằng độ, không kiểm tra xem nó có dẫn đến giải pháp không hợp lệ không"""
 
         if has_checked_item_in_container or item_index in self.placed_items:
 
@@ -298,10 +303,11 @@ class Solution:
 
                 for internal_index in internal_item_indices:
 
-                    self.placed_items[internal_index].rotate(angle, False, self.placed_items[item_index].position)
+                    self.placed_items[internal_index].rotate(
+                        angle, False, self.placed_items[item_index].position)
 
     def rotate_item(self, item_index, angle, rotate_internal_items=False):
-        """Attempt to rotate the item with the passed index around its reference position according to the passed rotation angle, expressed in degrees, and return whether it was possible"""
+        """Cố gắng xoay vật phẩm có chỉ số được truyền vào quanh vị trí tham chiếu của nó theo góc xoay được truyền vào, được biểu thị bằng độ, và trả về xem nó có thể không"""
 
         if item_index in self.placed_items:
 
@@ -318,7 +324,8 @@ class Solution:
             # undo the rotation if it makes the solution unfeasible
             else:
 
-                self._rotate_item_to(item_index, old_rotation, True, rotate_internal_items)
+                self._rotate_item_to(
+                    item_index, old_rotation, True, rotate_internal_items)
 
         return False
 
@@ -338,7 +345,8 @@ class Solution:
 
                 for internal_index in internal_item_indices:
 
-                    self.placed_items[internal_index].rotate(new_rotation - old_rotation, False, self.placed_items[item_index].position)
+                    self.placed_items[internal_index].rotate(
+                        new_rotation - old_rotation, False, self.placed_items[item_index].position)
 
     def rotate_item_to(self, item_index, new_rotation, rotate_internal_items=False):
         """Rotate the shape around its reference position so that it ends up having the passed new rotation, and return whether it was possible"""
@@ -348,7 +356,8 @@ class Solution:
             old_rotation = self.placed_items[item_index].rotation
 
             # temporarily rotate the item, before intersection checks
-            self._rotate_item_to(item_index, new_rotation, rotate_internal_items)
+            self._rotate_item_to(item_index, new_rotation,
+                                 rotate_internal_items)
 
             # ensure that the solution is valid with the new rotation, i.e. it causes no intersections
             if self.is_valid_placement(item_index):
@@ -358,12 +367,14 @@ class Solution:
             # undo the rotation if it makes the solution unfeasible
             else:
 
-                self._rotate_item_to(item_index, old_rotation, rotate_internal_items)
+                self._rotate_item_to(
+                    item_index, old_rotation, rotate_internal_items)
 
         return False
 
     def rotate_item_in_direction(self, item_index, clockwise, angle_num):
         """Try to rotate the item with the passed index in clockwise or counter-clockwise direction (as specified), checking the maximum number of equally distributed angles as indicated"""
+        """Cố gắng xoay vật phẩm có chỉ số được truyền vào theo chiều kim đồng hồ hoặc ngược chiều kim đồng hồ (như được chỉ định), kiểm tra số lượng góc phân bố tối đa như đã chỉ định"""
 
         has_rotated = False
 
@@ -508,6 +519,227 @@ class Solution:
 
         return inside_item_indices
 
+    # def visualize(self, title_override=None, show_title=True, show_container_value_and_weight=True, show_outside_value_and_weight=True, show_outside_items=True, color_items_by_profit_ratio=True, show_item_value_and_weight=True, show_value_and_weight_for_container_items=False, show_reference_positions=False, show_bounding_boxes=False, show_value_weight_ratio_bar=True, force_show_color_bar_min_max=False, show_plot=True, save_path=None):
+    #     """Visualize the solution, with placed items in their real position and rotation, and the other ones visible outside the container"""
+
+    #     can_consider_weight = self.problem.container.max_weight != np.inf
+
+    #     # set up the plotting figure
+    #     fig_size = (13, 6.75)
+    #     dpi = 160
+    #     fig = plt.figure(figsize=fig_size, dpi=dpi)
+    #     if show_outside_items:
+    #         ax1 = fig.add_subplot(1, 2, 1)
+    #         ax1.set(aspect="equal")
+    #         ax2 = fig.add_subplot(1, 2, 2, sharex=ax1, sharey=ax1)
+    #         ax2.set(aspect="equal")
+    #         ax2.tick_params(axis="both", which="major", labelsize=11)
+    #     else:
+    #         ax1 = plt.gca()
+    #         ax1.set(aspect="equal")
+    #         ax2 = None
+    #     ax1.tick_params(axis="both", which="major", labelsize=11)
+    #     if show_title:
+    #         fig.suptitle(title_override if title_override else "2D Irregular Shape Packing + 0/1 Knapsack Problem")
+
+    #     outside_item_bounds = dict()
+    #     total_outside_item_width = 0.
+
+    #     # represent the container
+    #     x, y = get_shape_exterior_points(self.problem.container.shape, True)
+    #     container_color = (.8, .8, .8)
+    #     boundary_color = (0., 0., 0.)
+    #     ax1.plot(x, y, color=boundary_color, linewidth=1)
+    #     ax1.fill(x, y, color=container_color)
+    #     empty_color = (1., 1., 1.)
+    #     if type(self.problem.container.shape) == MultiPolygon:
+    #         for geom in self.problem.container.shape.geoms:
+    #             for hole in geom.interiors:
+    #                 x, y = get_shape_exterior_points(hole, True)
+    #                 fill_color = empty_color
+    #                 boundary_color = (0., 0., 0.)
+    #                 ax1.plot(x, y, color=boundary_color, linewidth=1)
+    #                 ax1.fill(x, y, color=fill_color)
+
+    #     font = {'family': 'serif', 'color':  'black', 'weight': 'normal', 'size': 12}
+
+    #     # show the total value and weight in the container, and the maximum acceptable weight (capacity)
+    #     if show_container_value_and_weight:
+    #         value_weight_string = "V={}".format(self.value if can_consider_weight else int(self.value))
+    #         if can_consider_weight:
+    #             value_weight_string += ", W={}, Wmax={}".format(self.weight, self.problem.container.max_weight)
+    #         ax1.set_title("Items inside the container\n({})".format(value_weight_string), fontsize=13)
+
+    #     # determine the range of item profitability ratio, for later coloring of items
+    #     min_profit_ratio = np.inf
+    #     max_profit_ratio = -np.inf
+    #     item_profit_ratios = dict()
+    #     for item_index, item in enumerate(self.problem.items):
+    #         if item.weight == 0:
+    #             profit_ratio = np.inf
+    #         else:
+    #             profit_ratio = item.value / item.weight
+    #         item_profit_ratios[item_index] = profit_ratio
+    #         min_profit_ratio = min(min_profit_ratio, profit_ratio)
+    #         max_profit_ratio = max(max_profit_ratio, profit_ratio)
+    #     best_profit_color = (1, 0.35, 0)
+    #     worst_profit_color = (1, 0.8, 0.8)
+    #     color_interp = interpolate.interp1d([min_profit_ratio, max_profit_ratio], [0, 1])
+
+    #     # if possible, add a color-bar showing the value/weight ratio scale
+    #     if show_value_weight_ratio_bar:
+    #         fig.subplots_adjust(bottom=0.15)
+    #         fig.subplots_adjust(wspace=0.11)
+    #         bar_x, bar_y, bar_width, bar_height = 0.5, 0.1, 0.3, 0.02
+    #         bar_ax = fig.add_axes([bar_x - bar_width * 0.5, bar_y - bar_height * 0.5, bar_width, bar_height])
+    #         color_map = LinearSegmentedColormap.from_list(name="profit-colors", colors=[worst_profit_color, best_profit_color])
+    #         norm = colors.Normalize(vmin=min_profit_ratio, vmax=max_profit_ratio)
+    #         if force_show_color_bar_min_max:
+    #             ticks = np.linspace(min_profit_ratio, max_profit_ratio, 7, endpoint=True)
+    #         else:
+    #             ticks = None
+    #         bar = colorbar.ColorbarBase(bar_ax, cmap=color_map, norm=norm, ticks=ticks, orientation='horizontal', ticklocation="bottom")
+    #         bar.set_label(label="value/weight ratio", size=13)
+    #         bar.ax.tick_params(labelsize=11)
+
+    #     for index, item in enumerate(self.problem.items):
+
+    #         # represent the placed items
+    #         if item_index in self.placed_items:
+
+    #             if color_items_by_profit_ratio:
+    #                 fill_color = worst_profit_color + tuple(best_profit_color[i] - worst_profit_color[i]
+    #                                                         for i in range(len(best_profit_color))) * color_interp(item_profit_ratios[item_index])
+    #             else:
+    #                 fill_color = (1, 0.5, 0.5)
+
+    #             self.show_item(item_index, ax1, boundary_color, fill_color, container_color,
+    #                            show_item_value_and_weight and show_value_and_weight_for_container_items, font, show_bounding_boxes, show_reference_positions)
+
+    #         # determine the boundary rectangle of the outside-of-container items
+    #         elif show_outside_items and ax2:
+
+    #             outside_item_bounds[item_index] = get_bounds(self.problem.items[item_index].shape)
+    #             total_outside_item_width += abs(outside_item_bounds[item_index][2] - outside_item_bounds[item_index][0])
+
+    #     # show the outside-of-container items
+    #     if show_outside_items and ax2:
+
+    #         out_value_sum = 0
+    #         out_weight_sum = 0
+    #         row_num = max(1, int(np.log10(len(self.problem.items)) * (3 if len(self.problem.items) < 15 else 4)))
+    #         row = 0
+    #         width = 0
+    #         max_width = 0
+    #         row_height = 0
+    #         height = 0
+    #         for item_index, bounds in outside_item_bounds.items():
+
+    #             out_value_sum += self.problem.items[item_index].value
+    #             out_weight_sum += self.problem.items[item_index].weight
+
+    #             if color_items_by_profit_ratio:
+    #                 fill_color = worst_profit_color + tuple(best_profit_color[i] - worst_profit_color[i]
+    #                                                         for i in range(len(best_profit_color))) * color_interp(item_profit_ratios[item_index])
+    #             else:
+    #                 fill_color = (1, 0.5, 0.5)
+
+    #             min_x, min_y, max_x, max_y = bounds
+    #             shape_width = abs(max_x - min_x)
+    #             shape_height = abs(max_y - min_y)
+
+    #             shape_center = get_bounding_rectangle_center(self.problem.items[item_index].shape)
+    #             position_offset = (width + shape_width * 0.5 - shape_center[0], row_height + shape_height * 0.5 - shape_center[1])
+    #             self.show_item(item_index, ax2, boundary_color, fill_color, empty_color, show_item_value_and_weight,
+    #                            font, show_bounding_boxes, show_reference_positions, position_offset)
+
+    #             height = max(height, row_height + shape_height)
+
+    #             width += shape_width
+    #             max_width += width
+    #             if width >= total_outside_item_width / row_num:
+    #                 row += 1
+    #                 width = 0
+    #                 row_height = height
+
+    #         # show the value and weight outside the container
+    #         if show_outside_value_and_weight and ax2:
+    #             value_weight_string = "V={}".format(out_value_sum if can_consider_weight else int(out_value_sum))
+    #             if can_consider_weight:
+    #                 value_weight_string += ", W={}".format(out_weight_sum)
+    #             ax2.set_title("Items outside the container\n({})".format(value_weight_string), fontsize=13)
+
+    #     fig = plt.gcf()
+
+    #     if show_plot:
+    #         plt.show()
+
+    #     if save_path:
+    #         fig.savefig(save_path, bbox_inches="tight", dpi=dpi)
+    #         plt.close(fig)
+
+    # def show_item(self, item_index, ax, boundary_color, fill_color, container_color, show_item_value_and_weight=False, font=None, show_bounding_box=False, show_reference_position=False, position_offset=(0, 0)):
+    #     """Show the shape of the passed item index in the indicated axis with the passed colors"""
+
+    #     if item_index in self.placed_items:
+    #         placed_shape = self.placed_items[item_index]
+    #         shape = placed_shape.shape
+    #     else:
+    #         placed_shape = None
+    #         shape = self.problem.items[item_index].shape
+
+    #     x, y = get_shape_exterior_points(shape, True)
+    #     if position_offset != (0, 0):
+    #         x = [x_i + position_offset[0] for x_i in x]
+    #         y = [y_i + position_offset[1] for y_i in y]
+
+    #     ax.plot(x, y, color=boundary_color, linewidth=1)
+    #     ax.fill(x, y, color=fill_color)
+
+    #     if type(shape) == MultiPolygon:
+    #         for geom in shape.geoms:
+    #             for hole in geom.interiors:
+    #                 x, y = get_shape_exterior_points(hole, True)
+    #                 if position_offset != (0, 0):
+    #                     x = [x_i + position_offset[0] for x_i in x]
+    #                     y = [y_i + position_offset[1] for y_i in y]
+    #                 fill_color = container_color
+    #                 boundary_color = (0., 0., 0.)
+    #                 ax.plot(x, y, color=boundary_color, linewidth=1)
+    #                 ax.fill(x, y, color=fill_color)
+
+    #     # show the value and weight in the centroid if required
+    #     if show_item_value_and_weight and font:
+    #         centroid = get_centroid(shape)
+    #         value = self.problem.items[item_index].value
+    #         if value != 0 and value == int(value):
+    #             value = int(value)
+    #         weight = self.problem.items[item_index].weight
+    #         if weight != 0 and weight == int(weight):
+    #             weight = int(weight)
+    #         value_weight_string = "v={}\nw={}".format(value, weight)
+    #         item_font = dict(font)
+    #         item_font['size'] = 9
+    #         ax.text(centroid.x + position_offset[0], centroid.y + position_offset[1], value_weight_string,
+    #                 horizontalalignment='center', verticalalignment='center', fontdict=item_font)
+
+    #     # show the bounding box and its center if needed
+    #     if show_bounding_box:
+    #         bounds = get_bounds(shape)
+    #         min_x, min_y, max_x, max_y = bounds
+    #         x, y = (min_x, max_x, max_x, min_x, min_x), (min_y, min_y, max_y, max_y, min_y)
+    #         if position_offset != (0, 0):
+    #             x = [x_i + position_offset[0] for x_i in x]
+    #             y = [y_i + position_offset[1] for y_i in y]
+    #         boundary_color = (0.5, 0.5, 0.5)
+    #         ax.plot(x, y, color=boundary_color, linewidth=1)
+    #         bounds_center = get_bounding_rectangle_center(shape)
+    #         ax.plot(bounds_center[0] + position_offset[0], bounds_center[1] + position_offset[1], "r.")
+
+    #     # show the reference position if required
+    #     if show_reference_position and placed_shape:
+    #         ax.plot(placed_shape.position[0], placed_shape.position[1], "b+")
+
     def visualize(self, title_override=None, show_title=True, show_container_value_and_weight=True, show_outside_value_and_weight=True, show_outside_items=True, color_items_by_profit_ratio=True, show_item_value_and_weight=True, show_value_and_weight_for_container_items=False, show_reference_positions=False, show_bounding_boxes=False, show_value_weight_ratio_bar=True, force_show_color_bar_min_max=False, show_plot=True, save_path=None):
         """Visualize the solution, with placed items in their real position and rotation, and the other ones visible outside the container"""
 
@@ -529,7 +761,8 @@ class Solution:
             ax2 = None
         ax1.tick_params(axis="both", which="major", labelsize=11)
         if show_title:
-            fig.suptitle(title_override if title_override else "2D Irregular Shape Packing + 0/1 Knapsack Problem")
+            fig.suptitle(
+                title_override if title_override else "2D Irregular Shape Packing + 0/1 Knapsack Problem")
 
         outside_item_bounds = dict()
         total_outside_item_width = 0.
@@ -550,14 +783,18 @@ class Solution:
                     ax1.plot(x, y, color=boundary_color, linewidth=1)
                     ax1.fill(x, y, color=fill_color)
 
-        font = {'family': 'serif', 'color':  'black', 'weight': 'normal', 'size': 12}
+        font = {'family': 'serif', 'color':  'black',
+                'weight': 'normal', 'size': 12}
 
         # show the total value and weight in the container, and the maximum acceptable weight (capacity)
         if show_container_value_and_weight:
-            value_weight_string = "V={}".format(self.value if can_consider_weight else int(self.value))
+            value_weight_string = "V={}".format(
+                self.value if can_consider_weight else int(self.value))
             if can_consider_weight:
-                value_weight_string += ", W={}, Wmax={}".format(self.weight, self.problem.container.max_weight)
-            ax1.set_title("Items inside the container\n({})".format(value_weight_string), fontsize=13)
+                value_weight_string += ", W={}, Wmax={}".format(
+                    self.weight, self.problem.container.max_weight)
+            ax1.set_title("Items inside the container\n({})".format(
+                value_weight_string), fontsize=13)
 
         # determine the range of item profitability ratio, for later coloring of items
         min_profit_ratio = np.inf
@@ -573,32 +810,38 @@ class Solution:
             max_profit_ratio = max(max_profit_ratio, profit_ratio)
         best_profit_color = (1, 0.35, 0)
         worst_profit_color = (1, 0.8, 0.8)
-        color_interp = interpolate.interp1d([min_profit_ratio, max_profit_ratio], [0, 1])
+        color_interp = interpolate.interp1d(
+            [min_profit_ratio, max_profit_ratio], [0, 1])
 
         # if possible, add a color-bar showing the value/weight ratio scale
         if show_value_weight_ratio_bar:
             fig.subplots_adjust(bottom=0.15)
             fig.subplots_adjust(wspace=0.11)
             bar_x, bar_y, bar_width, bar_height = 0.5, 0.1, 0.3, 0.02
-            bar_ax = fig.add_axes([bar_x - bar_width * 0.5, bar_y - bar_height * 0.5, bar_width, bar_height])
-            color_map = LinearSegmentedColormap.from_list(name="profit-colors", colors=[worst_profit_color, best_profit_color])
-            norm = colors.Normalize(vmin=min_profit_ratio, vmax=max_profit_ratio)
+            bar_ax = fig.add_axes(
+                [bar_x - bar_width * 0.5, bar_y - bar_height * 0.5, bar_width, bar_height])
+            color_map = LinearSegmentedColormap.from_list(
+                name="profit-colors", colors=[worst_profit_color, best_profit_color])
+            norm = colors.Normalize(
+                vmin=min_profit_ratio, vmax=max_profit_ratio)
             if force_show_color_bar_min_max:
-                ticks = np.linspace(min_profit_ratio, max_profit_ratio, 7, endpoint=True)
+                ticks = np.linspace(
+                    min_profit_ratio, max_profit_ratio, 7, endpoint=True)
             else:
                 ticks = None
-            bar = colorbar.ColorbarBase(bar_ax, cmap=color_map, norm=norm, ticks=ticks, orientation='horizontal', ticklocation="bottom")
+            bar = colorbar.ColorbarBase(bar_ax, cmap=color_map, norm=norm,
+                                        ticks=ticks, orientation='horizontal', ticklocation="bottom")
             bar.set_label(label="value/weight ratio", size=13)
             bar.ax.tick_params(labelsize=11)
 
-        for index, item in enumerate(self.problem.items):
+        for item_index, item in enumerate(self.problem.items):
 
             # represent the placed items
             if item_index in self.placed_items:
 
                 if color_items_by_profit_ratio:
-                    fill_color = worst_profit_color + tuple(best_profit_color[i] - worst_profit_color[i]
-                                                            for i in range(len(best_profit_color))) * color_interp(item_profit_ratios[item_index])
+                    fill_color = worst_profit_color + tuple(best_profit_color[i] - worst_profit_color[i] for i in range(
+                        len(best_profit_color))) * color_interp(item_profit_ratios[item_index])
                 else:
                     fill_color = (1, 0.5, 0.5)
 
@@ -608,15 +851,18 @@ class Solution:
             # determine the boundary rectangle of the outside-of-container items
             elif show_outside_items and ax2:
 
-                outside_item_bounds[item_index] = get_bounds(self.problem.items[item_index].shape)
-                total_outside_item_width += abs(outside_item_bounds[item_index][2] - outside_item_bounds[item_index][0])
+                outside_item_bounds[item_index] = get_bounds(
+                    self.problem.items[item_index].shape)
+                total_outside_item_width += abs(
+                    outside_item_bounds[item_index][2] - outside_item_bounds[item_index][0])
 
         # show the outside-of-container items
         if show_outside_items and ax2:
 
             out_value_sum = 0
             out_weight_sum = 0
-            row_num = max(1, int(np.log10(len(self.problem.items)) * (3 if len(self.problem.items) < 15 else 4)))
+            row_num = max(1, int(np.log10(len(self.problem.items))
+                          * (3 if len(self.problem.items) < 15 else 4)))
             row = 0
             width = 0
             max_width = 0
@@ -628,8 +874,8 @@ class Solution:
                 out_weight_sum += self.problem.items[item_index].weight
 
                 if color_items_by_profit_ratio:
-                    fill_color = worst_profit_color + tuple(best_profit_color[i] - worst_profit_color[i]
-                                                            for i in range(len(best_profit_color))) * color_interp(item_profit_ratios[item_index])
+                    fill_color = worst_profit_color + tuple(best_profit_color[i] - worst_profit_color[i] for i in range(
+                        len(best_profit_color))) * color_interp(item_profit_ratios[item_index])
                 else:
                     fill_color = (1, 0.5, 0.5)
 
@@ -637,8 +883,10 @@ class Solution:
                 shape_width = abs(max_x - min_x)
                 shape_height = abs(max_y - min_y)
 
-                shape_center = get_bounding_rectangle_center(self.problem.items[item_index].shape)
-                position_offset = (width + shape_width * 0.5 - shape_center[0], row_height + shape_height * 0.5 - shape_center[1])
+                shape_center = get_bounding_rectangle_center(
+                    self.problem.items[item_index].shape)
+                position_offset = (
+                    width + shape_width * 0.5 - shape_center[0], row_height + shape_height * 0.5 - shape_center[1])
                 self.show_item(item_index, ax2, boundary_color, fill_color, empty_color, show_item_value_and_weight,
                                font, show_bounding_boxes, show_reference_positions, position_offset)
 
@@ -653,10 +901,12 @@ class Solution:
 
             # show the value and weight outside the container
             if show_outside_value_and_weight and ax2:
-                value_weight_string = "V={}".format(out_value_sum if can_consider_weight else int(out_value_sum))
+                value_weight_string = "V={}".format(
+                    out_value_sum if can_consider_weight else int(out_value_sum))
                 if can_consider_weight:
                     value_weight_string += ", W={}".format(out_weight_sum)
-                ax2.set_title("Items outside the container\n({})".format(value_weight_string), fontsize=13)
+                ax2.set_title("Items outside the container\n({})".format(
+                    value_weight_string), fontsize=13)
 
         fig = plt.gcf()
 
@@ -701,10 +951,10 @@ class Solution:
         if show_item_value_and_weight and font:
             centroid = get_centroid(shape)
             value = self.problem.items[item_index].value
-            if value != 0 and value == int(value):
+            if value / int(value) == 1:
                 value = int(value)
             weight = self.problem.items[item_index].weight
-            if weight != 0 and weight == int(weight):
+            if weight / int(weight) == 1:
                 weight = int(weight)
             value_weight_string = "v={}\nw={}".format(value, weight)
             item_font = dict(font)
@@ -716,15 +966,43 @@ class Solution:
         if show_bounding_box:
             bounds = get_bounds(shape)
             min_x, min_y, max_x, max_y = bounds
-            x, y = (min_x, max_x, max_x, min_x, min_x), (min_y, min_y, max_y, max_y, min_y)
+            x, y = (min_x, max_x, max_x, min_x,
+                    min_x), (min_y, min_y, max_y, max_y, min_y)
             if position_offset != (0, 0):
                 x = [x_i + position_offset[0] for x_i in x]
                 y = [y_i + position_offset[1] for y_i in y]
             boundary_color = (0.5, 0.5, 0.5)
             ax.plot(x, y, color=boundary_color, linewidth=1)
             bounds_center = get_bounding_rectangle_center(shape)
-            ax.plot(bounds_center[0] + position_offset[0], bounds_center[1] + position_offset[1], "r.")
+            ax.plot(bounds_center[0] + position_offset[0],
+                    bounds_center[1] + position_offset[1], "r.")
 
         # show the reference position if required
         if show_reference_position and placed_shape:
             ax.plot(placed_shape.position[0], placed_shape.position[1], "b+")
+
+    def get_bounding_circle(self):
+        """Trả về tâm và bán kính của hình tròn bao quanh nhỏ nhất chứa tất cả các hình dạng"""
+        # Lấy các điểm biên của tất cả các hình
+        min_x, min_y, max_x, max_y = self.get_global_bounds()
+        
+        # Tính tâm hình tròn
+        center_x = (min_x + max_x) / 2
+        center_y = (min_y + max_y) / 2
+        center = (center_x, center_y)
+        
+        # Tính bán kính từ tâm đến điểm xa nhất
+        radius = max(
+            np.sqrt((max_x - center_x)**2 + (max_y - center_y)**2),
+            np.sqrt((min_x - center_x)**2 + (max_y - center_y)**2),
+            np.sqrt((max_x - center_x)**2 + (min_y - center_y)**2),
+            np.sqrt((min_x - center_x)**2 + (min_y - center_y)**2)
+        )
+        
+        return center, radius
+
+    def get_bounding_circle_area(self):
+        """Trả về diện tích của hình tròn bao quanh nhỏ nhất"""
+        _, radius = self.get_bounding_circle()
+        return np.pi * radius * radius
+
